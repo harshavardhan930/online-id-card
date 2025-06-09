@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ID Card Generator</title>
   <link
     rel="stylesheet"
@@ -12,7 +13,7 @@
     body {
       font-family: 'Segoe UI', sans-serif;
       display: flex;
-      flex-wrap: wrap; /* allow wrapping on smaller screens */
+      flex-wrap: wrap;
       justify-content: center;
       gap: 30px;
       padding: 20px;
@@ -22,7 +23,6 @@
       box-sizing: border-box;
     }
 
-    /* Form container */
     .form-container {
       background: #fff;
       padding: 25px;
@@ -62,7 +62,6 @@
 
     #crop-area {
       width: 100%;
-      height: auto;
       border: 2px dashed #aaa;
       padding: 5px;
       border-radius: 10px;
@@ -109,40 +108,30 @@
       box-sizing: border-box;
     }
 
-    /* Add these styles */
+    #idCardPreview {
+      position: relative;
+      width: 645px;
+      height: 991px;
+      background-image: url('idcard-template.png');
+      background-size: cover;
+      border: 4px solid #333;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
 
-#idCardPreview {
-  position: relative;
-  width: 645px;
-  height: 991px;
-  background-image: url('idcard-template.png');
-  background-size: cover;
-  border: 4px solid #333;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-}
+    #watermarkLogo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 600px;
+      height: auto;
+      opacity: 0.1;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-#watermarkLogo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 600px; /* adjust size as needed */
-  height: auto;
-  opacity: 0.1; /* low opacity for watermark */
-  transform: translate(-50%, -50%);
-  pointer-events: none; /* so it doesn't block interactions */
-  z-index: 0; /* behind other elements */
-}
-
-/* Make sure other elements are above watermark */
-#finalPhoto, .field {
-  position: absolute;
-  z-index: 1;
-}
-
-
-    /* Photo on ID */
     #finalPhoto {
       position: absolute;
       top: 280px;
@@ -152,167 +141,146 @@
       object-fit: cover;
       border: 2px solid #000;
       border-radius: 8px;
+      z-index: 1;
     }
 
-    /* Text fields on ID */
     .field {
       position: absolute;
       font-weight: bold;
-      line-height: 1;
-      /* Use font-size and color in individual ids */
-      white-space: nowrap; /* prevent wrapping */
-      text-shadow: 0 0 3px rgba(0,0,0,0.5); /* subtle shadow for better visibility */
-    }
-
-    /* Positions and styling of fields on desktop */
-    #admn {
-      top: 233px;
-      left: 175px;
-      font-size: 30px;
-      color: rgb(107, 11, 67);
-    }
-    #pen {
-      top: 677px;
-      left: 285px;
-      font-size: 28px;
-      color: #000;
-    }
-    #child {
-      top: 720px;
-      left: 285px;
-      font-size: 28px;
-      color: #000;
-    }
-    #father {
-      top: 900px;
-      left: 325px;
-      font-size: 28px;
-      color: #fff;
-    }
-    #cell {
-      top: 937px;
-      left: 325px;
-      font-size: 28px;
-      color: #fff;
-    }
-
-    /* Name centered horizontally with width and centered text */
-    #name {
-      position: absolute;
-      top: 640px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 30px;
-      color: red;
-      width: 600px;
-      text-align: center;
       white-space: nowrap;
+      text-shadow: 0 0 3px rgba(0,0,0,0.5);
+      z-index: 1;
     }
 
-    canvas {
-      display: none;
-    }
+    #admn { top: 227px; left: 175px; font-size: 30px; color: rgb(107, 11, 67); }
+    #pen   { top: 673px; left: 285px; font-size: 28px; color: #000; }
+    #child { top: 712px; left: 285px; font-size: 28px; color: #000; }
+    #father{ top: 897px; left: 325px; font-size: 28px; color: #fff; }
+    #cell  { top: 932px; left: 325px; font-size: 28px; color: #fff; }
+    #name  { top: 627px; left: 50%; transform: translateX(-50%); font-size: 30px; color: red; width: 600px; text-align: center; }
 
-    /* Responsive styles */
+    canvas { display: none; }
+
+    /* Tablet & small desktop */
     @media (max-width: 1100px) {
-      #idCardPreview {
-        width: 480px;
-        height: 739px;
-      }
-      #finalPhoto {
-        top: 210px;
-        left: 135px;
-        width: 205px;
-        height: 255px;
-      }
-      #admn {
-        top: 175px;
-        left: 130px;
-        font-size: 22px;
-      }
-      #pen {
-        top: 500px;
-        left: 215px;
-        font-size: 20px;
-      }
-      #child {
-        top: 530px;
-        left: 215px;
-        font-size: 20px;
-      }
-      #father {
-        top: 700px;
-        left: 245px;
-        font-size: 20px;
-      }
-      #cell {
-        top: 730px;
-        left: 245px;
-        font-size: 20px;
-      }
-      #name {
-        top: 480px;
-        width: 440px;
-        font-size: 22px;
-      }
+      #idCardPreview { width: 480px; height: 739px; }
+
+      #finalPhoto { top: 210px; left: 135px; width: 205px; height: 255px; }
+
+      #admn { top: 175px; left: 130px; font-size: 22px; }
+      #pen { top: 500px; left: 215px; font-size: 20px; }
+      #child { top: 530px; left: 215px; font-size: 20px; }
+      #father { top: 700px; left: 245px; font-size: 20px; }
+      #cell { top: 730px; left: 245px; font-size: 20px; }
+      #name { top: 480px; width: 440px; font-size: 22px; }
     }
 
+    /* Mobile */
     @media (max-width: 700px) {
-      body {
-        flex-direction: column;
-        align-items: center;
-      }
-      .form-container {
-        width: 90vw;
-        max-width: 400px;
-      }
+      body { flex-direction: column; align-items: center; }
+
+      .form-container { width: 90vw; max-width: 400px; }
+
       #idCardPreview {
         width: 90vw;
-        height: calc(90vw * 991 / 645); /* maintain aspect ratio */
+        height: calc(90vw * 991 / 645);
         margin-top: 20px;
       }
+
       #finalPhoto {
         top: calc(90vw * 280 / 645);
         left: calc(90vw * 180 / 645);
         width: calc(90vw * 275 / 645);
         height: calc(90vw * 340 / 645);
       }
+
+      #watermarkLogo {
+        width: 80vw;
+      }
+
       #admn {
         top: calc(90vw * 233 / 645);
         left: calc(90vw * 175 / 645);
         font-size: clamp(14px, 3vw, 20px);
       }
+
       #pen {
         top: calc(90vw * 677 / 645);
         left: calc(90vw * 285 / 645);
         font-size: clamp(14px, 3vw, 20px);
       }
+
       #child {
         top: calc(90vw * 720 / 645);
         left: calc(90vw * 285 / 645);
         font-size: clamp(14px, 3vw, 20px);
       }
-      #father {
-        top: calc(90vw * 900 / 645);
-        left: calc(90vw * 325 / 645);
-        font-size: clamp(14px, 3vw, 20px);
-      }
+
+       #father {
+    top: calc(90vw * 900 / 645);
+    left: calc(90vw * 325 / 645);
+    font-size: clamp(14px, 3vw, 20px);
+  }
+
       #cell {
         top: calc(90vw * 937 / 645);
         left: calc(90vw * 325 / 645);
         font-size: clamp(14px, 3vw, 20px);
       }
+
       #name {
         top: calc(90vw * 640 / 645);
         left: 50%;
-        width: 90vw;
-        font-size: clamp(18px, 4vw, 28px);
         transform: translateX(-50%);
+        width: 90vw;
+        font-size: clamp(16px, 4vw, 28px);
+        text-align: center;
       }
     }
+
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+.spinner {
+  border: 6px solid #ccc;
+  border-top: 6px solid #4a90e2;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#loadingOverlay p {
+  font-size: 18px;
+  color: #333;
+}
+
+
   </style>
 </head>
 <body>
+
+      <div id="loadingOverlay">
+  <div class="spinner"></div>
+  <p>Uploading... Please wait</p>
+</div>
   <div class="form-container">
     <h2>Student Details</h2>
     <input type="text" placeholder="Admission No" id="inputAdmn" />
@@ -325,13 +293,13 @@
     <div id="crop-area">
       <img id="cropImage" />
     </div>
-    <button onclick="cropAndInsert()">Crop & Insert Photo</button>
+    <button onclick="cropAndInsert()">Crop &amp; Insert Photo</button>
     <button onclick="generateID()">Generate ID Card</button>
     <a id="downloadLink" style="display:none;" download="idcard.png">Download ID Card</a>
   </div>
 
   <div id="idCardPreview">
-     <img id="watermarkLogo" src="your-logo.png" alt="Watermark Logo">
+    <img id="watermarkLogo" src="your-logo.png" alt="Watermark Logo" />
     <img id="finalPhoto" src="" alt="Cropped Photo" />
     <div class="field" id="admn">xxxx</div>
     <div class="field" id="pen">xxxxxxxxxx</div>
@@ -346,6 +314,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
+    // Element refs
     const admn = document.getElementById("inputAdmn");
     const pen = document.getElementById("inputPEN");
     const child = document.getElementById("inputChild");
@@ -399,7 +368,7 @@
         name.value.trim() === "" ||
         finalPhoto.src === ""
       ) {
-        alert("⚠️ Please fill in all the fields and upload a photo before generating the ID card.");
+        alert("⚠️ Please fill in all fields and upload a photo before generating the ID card.");
         return;
       }
 
@@ -417,37 +386,46 @@
     }
 
     function uploadToDrive(base64Image, filename) {
-      const scriptURL =
-        "https://script.google.com/macros/s/AKfycbykr5tjous0QZggMnM9WoFQKCFYkve1kUsvsLPCCEuvfoftzD0yj1FM3pny3NibrRX7/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbykr5tjous0QZggMnM9WoFQKCFYkve1kUsvsLPCCEuvfoftzD0yj1FM3pny3NibrRX7/exec";
+  const formData = new FormData();
+  formData.append("image", base64Image);
+  formData.append("filename", "Student_ID_" + filename + ".png");
 
-      const formData = new FormData();
-      formData.append("image", base64Image);
-      formData.append("filename", "Student_ID_" + filename + ".png");
+  const rawPhotoData = finalPhoto.src.split(",")[1];
+  formData.append("photo", rawPhotoData);
+  formData.append("photoName", "Passport_Photo_" + filename + ".png");
 
-      const rawPhotoData = finalPhoto.src.split(",")[1];
-      formData.append("photo", rawPhotoData);
-      formData.append("photoName", "Passport_Photo_" + filename + ".png");
+  formData.append("admn", admn.value);
+  formData.append("name", name.value);
+  formData.append("pen", pen.value);
+  formData.append("child", child.value);
+  formData.append("father", father.value);
+  formData.append("cell", cell.value);
 
-      formData.append("admn", admn.value);
-      formData.append("name", name.value);
-      formData.append("pen", pen.value);
-      formData.append("child", child.value);
-      formData.append("father", father.value);
-      formData.append("cell", cell.value);
+  // Show loading
+  document.getElementById("loadingOverlay").style.display = "flex";
 
-      fetch(scriptURL, {
-        method: "POST",
-        body: formData,
-      })
-        .then((response) => response.text())
-        .then((data) => {
-          alert("✅ Upload complete!\n" + data);
-        })
-        .catch((error) => {
-          console.error("❌ Upload error:", error);
-          alert("❌ Upload failed.");
-        });
-    }
+  fetch(scriptURL, {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      alert("✅ Upload complete!\n" + data);
+    })
+    .catch((error) => {
+      console.error("❌ Upload error:", error);
+      alert("❌ Upload failed.");
+    })
+    .finally(() => {
+      // Hide loading after upload completes or fails
+      document.getElementById("loadingOverlay").style.display = "none";
+    });
+}
+
   </script>
+
+
+
 </body>
 </html>
