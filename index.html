@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ID Card Generator</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+  />
+  <style>
+    /* Base styling */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-wrap: wrap; /* allow wrapping on smaller screens */
+      justify-content: center;
+      gap: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f1f4f9, #dff3ff);
+      color: #333;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    /* Form container */
+    .form-container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 320px;
+      box-sizing: border-box;
+    }
+
+    .form-container h2 {
+      margin-bottom: 10px;
+      color: #2c3e50;
+      font-size: 22px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 5px;
+    }
+
+    input[type='text'],
+    input[type='file'] {
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      transition: 0.3s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    input[type='text']:focus {
+      border-color: #4a90e2;
+      box-shadow: 0 0 3px #4a90e2;
+    }
+
+    #crop-area {
+      width: 100%;
+      height: auto;
+      border: 2px dashed #aaa;
+      padding: 5px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+      text-align: center;
+    }
+
+    #cropImage {
+      max-width: 100%;
+      display: none;
+      margin-top: 10px;
+      border-radius: 5px;
+      max-height: 300px;
+      object-fit: contain;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+      background: #4a90e2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button:hover {
+      background: #357abd;
+    }
+
+    #downloadLink {
+      text-decoration: none;
+      padding: 10px;
+      text-align: center;
+      background: #2ecc71;
+      color: white;
+      border-radius: 8px;
+      display: inline-block;
+      margin-top: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Add these styles */
+
+#idCardPreview {
+  position: relative;
+  width: 645px;
+  height: 991px;
+  background-image: url('idcard-template.png');
+  background-size: cover;
+  border: 4px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+#watermarkLogo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 600px; /* adjust size as needed */
+  height: auto;
+  opacity: 0.1; /* low opacity for watermark */
+  transform: translate(-50%, -50%);
+  pointer-events: none; /* so it doesn't block interactions */
+  z-index: 0; /* behind other elements */
+}
+
+/* Make sure other elements are above watermark */
+#finalPhoto, .field {
+  position: absolute;
+  z-index: 1;
+}
+
+
+    /* Photo on ID */
+    #finalPhoto {
+      position: absolute;
+      top: 280px;
+      left: 180px;
+      width: 275px;
+      height: 340px;
+      object-fit: cover;
+      border: 2px solid #000;
+      border-radius: 8px;
+    }
+
+    /* Text fields on ID */
+    .field {
+      position: absolute;
+      font-weight: bold;
+      line-height: 1;
+      /* Use font-size and color in individual ids */
+      white-space: nowrap; /* prevent wrapping */
+      text-shadow: 0 0 3px rgba(0,0,0,0.5); /* subtle shadow for better visibility */
+    }
+
+    /* Positions and styling of fields on desktop */
+    #admn {
+      top: 233px;
+      left: 175px;
+      font-size: 30px;
+      color: rgb(107, 11, 67);
+    }
+    #pen {
+      top: 677px;
+      left: 285px;
+      font-size: 28px;
+      color: #000;
+    }
+    #child {
+      top: 720px;
+      left: 285px;
+      font-size: 28px;
+      color: #000;
+    }
+    #father {
+      top: 900px;
+      left: 325px;
+      font-size: 28px;
+      color: #fff;
+    }
+    #cell {
+      top: 937px;
+      left: 325px;
+      font-size: 28px;
+      color: #fff;
+    }
+
+    /* Name centered horizontally with width and centered text */
+    #name {
+      position: absolute;
+      top: 640px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 30px;
+      color: red;
+      width: 600px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 1100px) {
+      #idCardPreview {
+        width: 480px;
+        height: 739px;
+      }
+      #finalPhoto {
+        top: 210px;
+        left: 135px;
+        width: 205px;
+        height: 255px;
+      }
+      #admn {
+        top: 175px;
+        left: 130px;
+        font-size: 22px;
+      }
+      #pen {
+        top: 500px;
+        left: 215px;
+        font-size: 20px;
+      }
+      #child {
+        top: 530px;
+        left: 215px;
+        font-size: 20px;
+      }
+      #father {
+        top: 700px;
+        left: 245px;
+        font-size: 20px;
+      }
+      #cell {
+        top: 730px;
+        left: 245px;
+        font-size: 20px;
+      }
+      #name {
+        top: 480px;
+        width: 440px;
+        font-size: 22px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      body {
+        flex-direction: column;
+        align-items: center;
+      }
+      .form-container {
+        width: 90vw;
+        max-width: 400px;
+      }
+      #idCardPreview {
+        width: 90vw;
+        height: calc(90vw * 991 / 645); /* maintain aspect ratio */
+        margin-top: 20px;
+      }
+      #finalPhoto {
+        top: calc(90vw * 280 / 645);
+        left: calc(90vw * 180 / 645);
+        width: calc(90vw * 275 / 645);
+        height: calc(90vw * 340 / 645);
+      }
+      #admn {
+        top: calc(90vw * 233 / 645);
+        left: calc(90vw * 175 / 645);
+        font-size: clamp(14px, 3vw, 20px);
+      }
+      #pen {
+        top: calc(90vw * 677 / 645);
+        left: calc(90vw * 285 / 645);
+        font-size: clamp(14px, 3vw, 20px);
+      }
+      #child {
+        top: calc(90vw * 720 / 645);
+        left: calc(90vw * 285 / 645);
+        font-size: clamp(14px, 3vw, 20px);
+      }
+      #father {
+        top: calc(90vw * 900 / 645);
+        left: calc(90vw * 325 / 645);
+        font-size: clamp(14px, 3vw, 20px);
+      }
+      #cell {
+        top: calc(90vw * 937 / 645);
+        left: calc(90vw * 325 / 645);
+        font-size: clamp(14px, 3vw, 20px);
+      }
+      #name {
+        top: calc(90vw * 640 / 645);
+        left: 50%;
+        width: 90vw;
+        font-size: clamp(18px, 4vw, 28px);
+        transform: translateX(-50%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Student Details</h2>
+    <input type="text" placeholder="Admission No" id="inputAdmn" />
+    <input type="text" placeholder="PEN No" id="inputPEN" />
+    <input type="text" placeholder="Child ID" id="inputChild" />
+    <input type="text" placeholder="Father's Name" id="inputFather" />
+    <input type="text" placeholder="Cell No" id="inputCell" />
+    <input type="text" placeholder="Student Name" id="inputName" />
+    <input type="file" id="photoInput" accept="image/*" />
+    <div id="crop-area">
+      <img id="cropImage" />
+    </div>
+    <button onclick="cropAndInsert()">Crop & Insert Photo</button>
+    <button onclick="generateID()">Generate ID Card</button>
+    <a id="downloadLink" style="display:none;" download="idcard.png">Download ID Card</a>
+  </div>
+
+  <div id="idCardPreview">
+     <img id="watermarkLogo" src="your-logo.png" alt="Watermark Logo">
+    <img id="finalPhoto" src="" alt="Cropped Photo" />
+    <div class="field" id="admn">xxxx</div>
+    <div class="field" id="pen">xxxxxxxxxx</div>
+    <div class="field" id="child">xxxxxxxxxx</div>
+    <div class="field" id="father">xxxx</div>
+    <div class="field" id="cell">xxxx</div>
+    <div class="field" id="name">xxxx</div>
+  </div>
+
+  <canvas id="finalCanvas"></canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    const admn = document.getElementById("inputAdmn");
+    const pen = document.getElementById("inputPEN");
+    const child = document.getElementById("inputChild");
+    const father = document.getElementById("inputFather");
+    const cell = document.getElementById("inputCell");
+    const name = document.getElementById("inputName");
+
+    admn.addEventListener("input", () => (document.getElementById("admn").innerText = admn.value));
+    pen.addEventListener("input", () => (document.getElementById("pen").innerText = pen.value));
+    child.addEventListener("input", () => (document.getElementById("child").innerText = child.value));
+    father.addEventListener("input", () => (document.getElementById("father").innerText = father.value));
+    cell.addEventListener("input", () => (document.getElementById("cell").innerText = cell.value));
+    name.addEventListener("input", () => (document.getElementById("name").innerText = name.value));
+
+    const cropImage = document.getElementById("cropImage");
+    const photoInput = document.getElementById("photoInput");
+    const finalPhoto = document.getElementById("finalPhoto");
+    let cropper;
+
+    photoInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        cropImage.src = url;
+        cropImage.style.display = "block";
+        cropImage.onload = () => {
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(cropImage, {
+            aspectRatio: 13 / 16,
+            viewMode: 1,
+            autoCropArea: 1,
+          });
+        };
+      }
+    });
+
+    function cropAndInsert() {
+      if (cropper) {
+        const canvas = cropper.getCroppedCanvas({ width: 275, height: 340 });
+        finalPhoto.src = canvas.toDataURL("image/png");
+      }
+    }
+
+    function generateID() {
+      if (
+        admn.value.trim() === "" ||
+        pen.value.trim() === "" ||
+        child.value.trim() === "" ||
+        father.value.trim() === "" ||
+        cell.value.trim() === "" ||
+        name.value.trim() === "" ||
+        finalPhoto.src === ""
+      ) {
+        alert("⚠️ Please fill in all the fields and upload a photo before generating the ID card.");
+        return;
+      }
+
+      html2canvas(document.querySelector("#idCardPreview")).then((canvas) => {
+        canvas.toBlob((blob) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = function () {
+            const base64data = reader.result.split(",")[1];
+            const safeAdmn = admn.value.replace(/[^a-zA-Z0-9_-]/g, "_");
+            uploadToDrive(base64data, safeAdmn);
+          };
+        }, "image/png");
+      });
+    }
+
+    function uploadToDrive(base64Image, filename) {
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbykr5tjous0QZggMnM9WoFQKCFYkve1kUsvsLPCCEuvfoftzD0yj1FM3pny3NibrRX7/exec";
+
+      const formData = new FormData();
+      formData.append("image", base64Image);
+      formData.append("filename", "Student_ID_" + filename + ".png");
+
+      const rawPhotoData = finalPhoto.src.split(",")[1];
+      formData.append("photo", rawPhotoData);
+      formData.append("photoName", "Passport_Photo_" + filename + ".png");
+
+      formData.append("admn", admn.value);
+      formData.append("name", name.value);
+      formData.append("pen", pen.value);
+      formData.append("child", child.value);
+      formData.append("father", father.value);
+      formData.append("cell", cell.value);
+
+      fetch(scriptURL, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.text())
+        .then((data) => {
+          alert("✅ Upload complete!\n" + data);
+        })
+        .catch((error) => {
+          console.error("❌ Upload error:", error);
+          alert("❌ Upload failed.");
+        });
+    }
+  </script>
+</body>
+</html>
